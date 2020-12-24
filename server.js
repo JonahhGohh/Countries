@@ -24,7 +24,9 @@ io.on('connection', (socket) => {
         if (!lobbyCode) {
             // when host creates
             lobbyCode = makeId();
+
         }
+
         const user = userJoin(socket.id, name, lobbyCode);
         socket.join(lobbyCode);
         io.to(lobbyCode).emit('join', {
@@ -37,10 +39,12 @@ io.on('connection', (socket) => {
     // disconnect
     socket.on('disconnect', () => {
         console.log("user disconnected");
+        
         const user = userLeaves(socket.id);
-        io.to(user.lobbyCode).emit('room users', {
-            lobbyCode: user.lobbyCode,
-            users: getLobbyUsers(user.lobbyCode)
+        io.to(user.lobbyCode).emit('leaves', {
+            name: user.username,
+            lobbyUsers: getLobbyUsers(user.lobbyCode),
+            lobbyCode: user.lobbyCode  
         })
     });
 })
