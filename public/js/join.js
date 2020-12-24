@@ -3,6 +3,8 @@ const playerName = document.getElementById('name');
 const inputCode = document.getElementById('lobby-code');
 const errorMsg = document.getElementById('error-msg');
 
+
+//sends players to a different URL
 joinButton.onclick = () => {
     const lobbyCodeUpperCase = inputCode.value.toUpperCase();
     if (inputCode.value == "" || playerName.value == "") {

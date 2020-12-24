@@ -6,10 +6,13 @@ const bodyParser = require('body-parser');
 const { userJoin, getCurrentUser, userLeaves, getLobbyUsers, doesLobbyExist, isHost } = require('./utils/users');
 const makeId = require('./utils/code');
 
+
+//Create a HTTP server
 const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
 
+// Joining HTML + CSS files in 'public' folder with javascript
 app.use(express.static(path.join(__dirname, 'public')));
 
 // prepare any data to be read from requests with JSON format using bodyParser
@@ -17,7 +20,8 @@ app.use( bodyParser.json() );
 
 // socket.io listening event
 io.on('connection', (socket) => {
-    // connect
+    
+    // Listen's to 'join' event; Establish host
     socket.on('join', (queryParam) => {
         const name = queryParam.name;
         let lobbyCode = queryParam.lobbyCode;
@@ -36,10 +40,11 @@ io.on('connection', (socket) => {
         })
     })
 
-    // disconnect
+    // On disconnect
     socket.on('disconnect', () => {
         console.log("user disconnected");
-        
+
+        // Updates the userboard in the lobby when someone leaves
         const user = userLeaves(socket.id);
         io.to(user.lobbyCode).emit('leaves', {
             name: user.username,
