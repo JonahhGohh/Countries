@@ -6,11 +6,36 @@ const errorMsg = document.getElementById('error-msg');
 
 //sends players to a different URL
 joinButton.onclick = () => {
-    window.location=`/lobby.html?name=${playerName.value}&lobbyCode=${inputCode.value}`;  
+    const lobbyCodeUpperCase = inputCode.value.toUpperCase();
+    if (inputCode.value == "" || playerName.value == "") {
+        errorMsg.innerHTML = "Please fill up the lobby code or your username";
+        errorMsg.style.color = "red";
+    } else {
+        const data = { 
+            lobbyCode: lobbyCodeUpperCase
+        };
+        const otherParam = {
+            method: "POST",
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }
+        const postURL = './join.html';
+        fetch(postURL, otherParam)
+        .then(data => {
+            const httpStatus = data.status;
+            if (httpStatus == 200) {
+                window.location = `/lobby.html?name=${playerName.value}&lobbyCode=${lobbyCodeUpperCase}`;  
+            } else {
+                outputErrorMessage();
+            }
+        });
+    }
 }
 
-// const newDiv = document.createElement("div");
-//             newDiv.innerHTML = "Lobby Code does not exist";
-//             newDiv.style.color = "red";
-//             console.log(newDiv);
-//             errorMsg.appendChild(newDiv);
+const outputErrorMessage = () => {
+    errorMsg.innerHTML = "Lobby Code does not exist";
+    errorMsg.style.color = "red";
+}
