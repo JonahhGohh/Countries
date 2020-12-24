@@ -3,26 +3,37 @@ const playerName = document.getElementById('name');
 const inputCode = document.getElementById('lobby-code');
 const errorMsg = document.getElementById('error-msg');
 
-const { lobby } = Qs.parse(location.search, {
-    ignoreQueryPrefix: true
-});
-
-if (lobby) {
-    errorMsg.innerHTML = "Lobby does not exist. Please try again!";
-    errorMsg.style.color = "red";
-}
-
 joinButton.onclick = () => {
+    const lobbyCodeUpperCase = inputCode.value.toUpperCase();
     if (inputCode.value == "" || playerName.value == "") {
         errorMsg.innerHTML = "Please fill up the lobby code or your username";
         errorMsg.style.color = "red";
     } else {
-        window.location = `/lobby.html?name=${playerName.value}&lobbyCode=${inputCode.value}`;  
+        const data = { 
+            lobbyCode: lobbyCodeUpperCase
+        };
+        const otherParam = {
+            method: "POST",
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }
+        const postURL = './join.html';
+        fetch(postURL, otherParam)
+        .then(data => {
+            const httpStatus = data.status;
+            if (httpStatus == 200) {
+                window.location = `/lobby.html?name=${playerName.value}&lobbyCode=${lobbyCodeUpperCase}`;  
+            } else {
+                outputErrorMessage();
+            }
+        });
     }
 }
 
-// const newDiv = document.createElement("div");
-//             newDiv.innerHTML = "Lobby Code does not exist";
-//             newDiv.style.color = "red";
-//             console.log(newDiv);
-//             errorMsg.appendChild(newDiv);
+const outputErrorMessage = () => {
+    errorMsg.innerHTML = "Lobby Code does not exist";
+    errorMsg.style.color = "red";
+}

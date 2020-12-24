@@ -11,13 +11,8 @@ socket.emit('join', queryParam);
 socket.on('join', ({name, lobbyUsers, lobbyCode}) => {
     // output users who are in the lobby
     // also highlight the user
-    console.log(lobbyCode);
     outputUsers(name, lobbyUsers);
     outputLobbyCode(lobbyCode);
-})
-
-socket.on('no lobby found', () => {
-    window.location = '/join.html?lobby=doesNotExist';
 })
 
 const outputUsers = (name, lobbyUsers) => {
