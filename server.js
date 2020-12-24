@@ -5,14 +5,20 @@ const socketio = require('socket.io');
 const { userJoin, getCurrentUser, userLeaves, getLobbyUsers, doesLobbyExist, isHost } = require('./utils/users');
 const makeId = require('./utils/code');
 
+
+//Create a HTTP server
 const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
 
+// Joining HTML + CSS files in 'public' folder with javascript
 app.use(express.static(path.join(__dirname, 'public')));
 
+
+// When a user connects
 io.on('connection', (socket) => {
-    // connect
+    
+    //
     socket.on('join', (queryParam) => {
         const name = queryParam.name;
         const lobby = queryParam.lobbyCode;
