@@ -24,7 +24,7 @@ socket.on('join', ({ name, lobbyUsers, lobbyCode}) => {
 socket.on('leaves', ({ name, lobbyUsers, lobbyCode }) => {
     outputUsers(name, lobbyUsers);
     outputLobbyCode(lobbyCode); 
-})
+});
 
 const outputUsers = (name, lobbyUsers) => {
     userListHTML.innerHTML = `
@@ -47,19 +47,17 @@ const hostKickButton = (lobbyUsers) => {
     
     const host = lobbyUsers.find(user => user.isHost);
     if(socket.id == host.id) {
+        const nonHostUsers = lobbyUsers.filter(user => !user.isHost);
+        const listToAdd = `${nonHostUsers.map(user => `<li><a id="${socket.id}" class="dropdown-item" href="#">${user.username}</a></li>`).join('')}`;
         kickHTML.innerHTML = `
         <div class="dropdown">
         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
         KICK 
         </button>
         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        <li><a class="dropdown-item" href="#">A</a></li>
-        <li><a class="dropdown-item" href="#">B</a></li>
-        <li><a class="dropdown-item" href="#">C</a></li> 
+        ${listToAdd}
         </ul>
         </div>
         `;
     }
-    
 }
-
