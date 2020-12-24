@@ -18,7 +18,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // When a user connects
 io.on('connection', (socket) => {
     
-    //
+    // Listen's to 'join' event; Establish host [Incomplete code]
     socket.on('join', (queryParam) => {
         const name = queryParam.name;
         const lobby = queryParam.lobbyCode;
@@ -29,9 +29,11 @@ io.on('connection', (socket) => {
         }
     })
 
-    // disconnect
+    // On disconnect
     socket.on('disconnect', () => {
         console.log("user disconnected");
+
+        // Updates the userboard in the lobby when someone leaves
         const user = userLeaves(socket.id);
         io.to(user.lobbyCode).emit('room users', {
             lobbyCode: user.lobbyCode,
