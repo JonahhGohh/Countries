@@ -15,12 +15,26 @@ io.on('connection', (socket) => {
     // connect
     socket.on('join', (queryParam) => {
         const name = queryParam.name;
-        const lobby = queryParam.lobbyCode;
-        if (lobby) {
-            console.log('lobby runs when undefined');
+        let lobbyCode = queryParam.lobbyCode;
+        if (lobbyCode) {
+            // when user joins
+            if (doesLobbyExist(lobbyCode.toUpperCase())) {
+                lobbyCode = lobbyCode.toUpperCase();
+            } else {
+                socket.emit('no lobby found');
+            }
+            const user = userJoin(socket.id, name, lobbyCode);
         } else {
-            console.log('else lobby runs when undefined');
+            // when host creates
+            lobbyCode = makeId();
+            const user = userJoin(socket.id, name, lobbyCode);
         }
+        socket.join(lobbyCode);
+        io.to(lobbyCode).emit('join', {
+            name,
+            lobbyUsers: getLobbyUsers(lobbyCode),
+            lobbyCode
+        })
     })
 
     // disconnect
