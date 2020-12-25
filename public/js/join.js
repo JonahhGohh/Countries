@@ -1,15 +1,15 @@
-const joinButton = document.getElementById('join-button');
-const playerName = document.getElementById('name');
-const inputCode = document.getElementById('lobby-code');
-const errorMsg = document.getElementById('error-msg');
+const joinButtonHTML = document.getElementById('join-button');
+const playerNameHTML = document.getElementById('name');
+const inputCodeHTML = document.getElementById('lobby-code');
+const errorMsgHTML = document.getElementById('error-msg');
 
 
 //sends players to a different URL
-joinButton.onclick = () => {
-    const lobbyCodeUpperCase = inputCode.value.toUpperCase();
-    if (inputCode.value == "" || playerName.value == "") {
-        errorMsg.innerHTML = "Please fill up the lobby code or your username";
-        errorMsg.style.color = "red";
+joinButtonHTML.onclick = () => {
+    const lobbyCodeUpperCase = inputCodeHTML.value.toUpperCase();
+    if (inputCodeHTML.value == "" || playerNameHTML.value == "") {
+        errorMsgHTML.innerHTML = "Please fill up the lobby code or your username";
+        errorMsgHTML.style.color = "red";
     } else {
         const data = { 
             lobbyCode: lobbyCodeUpperCase
@@ -27,7 +27,7 @@ joinButton.onclick = () => {
         .then(data => {
             const httpStatus = data.status;
             if (httpStatus == 200) {
-                window.location = `/lobby.html?name=${playerName.value}&lobbyCode=${lobbyCodeUpperCase}`;  
+                window.location = `/lobby.html?name=${playerNameHTML.value}&lobbyCode=${lobbyCodeUpperCase}`;  
             } else {
                 outputErrorMessage();
             }
@@ -36,6 +36,6 @@ joinButton.onclick = () => {
 }
 
 const outputErrorMessage = () => {
-    errorMsg.innerHTML = "Lobby Code does not exist";
-    errorMsg.style.color = "red";
+    errorMsgHTML.innerHTML = "Lobby Code does not exist";
+    errorMsgHTML.style.color = "red";
 }
