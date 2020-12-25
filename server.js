@@ -31,7 +31,7 @@ io.on('connection', (socket) => {
 
         }
 
-        const user = userJoin(socket.id, name, lobbyCode);
+        const user = userJoin(socket.id, name, lobbyCode, socket);
         socket.join(lobbyCode);
         io.to(lobbyCode).emit('join', {
             name,
@@ -40,12 +40,31 @@ io.on('connection', (socket) => {
         })
     })
 
+    // On kick emits the event to the user who is getting kicked. This is to get the socket object of the user to disconnect
+    socket.on('kick', (socketId) => {
+        socket.to(socketId).emit('kick helper');
+    })
+
+    // receive final kick from socket of user getting kicked
+    socket.on('kicked', () => {
+        console.log(getCurrentUser(socket.id).username);
+        socket.emit('kicked');
+        socket.disconnect();
+    })
+
     // On disconnect
     socket.on('disconnect', () => {
         console.log("user disconnected");
-
+        
         // Updates the userboard in the lobby when someone leaves
         const user = userLeaves(socket.id);
+        const currRoomUsers = getLobbyUsers(user.lobbyCode)
+        if (isHost(user) && currRoomUsers.length > 0) {
+            // pass the host to the next user in line
+            const newHost = currRoomUsers[0];
+            console.log(newHost);
+            newHost.isHost = true;
+        }
         io.to(user.lobbyCode).emit('leaves', {
             name: user.username,
             lobbyUsers: getLobbyUsers(user.lobbyCode),
