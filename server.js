@@ -3,8 +3,10 @@ const http = require('http');
 const express = require('express');
 const socketio = require('socket.io');
 const bodyParser = require('body-parser');
+const formatMessage = require('./utils/messages');
 const { userJoin, getCurrentUser, userLeaves, getLobbyUsers, doesLobbyExist, isHost } = require('./utils/users');
 const makeId = require('./utils/code');
+const { format } = require('path');
 
 
 //Create a HTTP server
@@ -37,8 +39,8 @@ io.on('connection', (socket) => {
             name,
             lobbyUsers: getLobbyUsers(lobbyCode),
             lobbyCode
-        })
-    })
+        });
+    });
 
     // On kick emits the event to the user who is getting kicked. This is to get the socket object of the user to disconnect
     socket.on('kick', (socketId) => {
@@ -49,7 +51,7 @@ io.on('connection', (socket) => {
     socket.on('kicked', () => {
         socket.emit('kicked');
         socket.disconnect();
-    })
+    });
 
     // remove current host and make the new socket the host
     socket.on('transfer host', (socketId) => {
@@ -63,6 +65,17 @@ io.on('connection', (socket) => {
             lobbyUsers: getLobbyUsers(currHost.lobbyCode),
             lobbyCode: currHost.lobbyCode  
         })
+    });
+
+    // listen to chat messages
+    socket.on('chat message', (msg) => {
+        const user = getCurrentUser(socket.id);
+        io.to(user.lobbyCode).emit('chat message', formatMessage(user.username, msg));
+    })
+
+    // start game
+    socket.on('start game', () => {
+        console.log('Game started!');
     })
 
     // On disconnect
