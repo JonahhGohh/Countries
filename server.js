@@ -43,18 +43,30 @@ io.on('connection', (socket) => {
     // On kick emits the event to the user who is getting kicked. This is to get the socket object of the user to disconnect
     socket.on('kick', (socketId) => {
         socket.to(socketId).emit('kick helper');
-    })
+    });
 
     // receive final kick from socket of user getting kicked
     socket.on('kicked', () => {
-        console.log(getCurrentUser(socket.id).username);
         socket.emit('kicked');
         socket.disconnect();
     })
 
+    // remove current host and make the new socket the host
+    socket.on('transfer host', (socketId) => {
+        const currHost = getCurrentUser(socket.id);
+        currHost.isHost = false;
+        const newHost = getCurrentUser(socketId);
+        newHost.isHost = true;
+        io.to(currHost.lobbyCode).emit('transfer host', {
+            prevHost: currHost.username,
+            newHost: newHost.username,
+            lobbyUsers: getLobbyUsers(currHost.lobbyCode),
+            lobbyCode: currHost.lobbyCode  
+        })
+    })
+
     // On disconnect
     socket.on('disconnect', () => {
-        console.log("user disconnected");
         
         // Updates the userboard in the lobby when someone leaves
         const user = userLeaves(socket.id);
@@ -62,7 +74,6 @@ io.on('connection', (socket) => {
         if (isHost(user) && currRoomUsers.length > 0) {
             // pass the host to the next user in line
             const newHost = currRoomUsers[0];
-            console.log(newHost);
             newHost.isHost = true;
         }
         io.to(user.lobbyCode).emit('leaves', {
