@@ -34,12 +34,14 @@ io.on('connection', (socket) => {
         }
 
         const user = userJoin(socket.id, name, lobbyCode, socket);
+        const msg = formatMessage("Server", `${name} has joined the lobby.`);
         socket.join(lobbyCode);
         io.to(lobbyCode).emit('join', {
             name,
             lobbyUsers: getLobbyUsers(lobbyCode),
             lobbyCode
         });
+        socket.to(lobbyCode).emit('chat message', msg);
     });
 
     // On kick emits the event to the user who is getting kicked. This is to get the socket object of the user to disconnect
@@ -84,6 +86,7 @@ io.on('connection', (socket) => {
         // Updates the userboard in the lobby when someone leaves
         const user = userLeaves(socket.id);
         const currRoomUsers = getLobbyUsers(user.lobbyCode)
+        const msg = formatMessage("Server", `${user.username} has left the lobby.`);
         if (isHost(user) && currRoomUsers.length > 0) {
             // pass the host to the next user in line
             const newHost = currRoomUsers[0];
@@ -94,6 +97,7 @@ io.on('connection', (socket) => {
             lobbyUsers: getLobbyUsers(user.lobbyCode),
             lobbyCode: user.lobbyCode  
         })
+        socket.to(user.lobbyCode).emit("chat message", msg);
     });
 })
 

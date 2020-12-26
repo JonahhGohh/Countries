@@ -33,7 +33,7 @@ socket.on('chat message', (msg) => {
 // Sends the 'join' event when a user enter's the lobby
 socket.emit('join', queryParam);
 
-socket.on('join', ({ name, lobbyUsers, lobbyCode}) => {
+socket.on('join', ({ name, lobbyUsers, lobbyCode, msg }) => {
     // output users who are in the lobby
     // also highlight the user
     outputUsers(name, lobbyUsers);
@@ -43,7 +43,7 @@ socket.on('join', ({ name, lobbyUsers, lobbyCode}) => {
     hostKickButton(lobbyUsers);
     hostTransferButton(lobbyUsers);
     startGameButton(lobbyUsers);
-})
+});
 
 socket.on('leaves', ({ name, lobbyUsers, lobbyCode }) => {
     outputUsers(name, lobbyUsers);
